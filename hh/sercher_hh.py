@@ -5,15 +5,16 @@ import requests
 from fake_headers import Headers
 
 HOST = 'https://api.hh.ru/vacancies'
-params ={'text': 'python junior', 'area': (1), 'search_period': 15, 'experience' : 'noExperience', 'per_page':10}
+params ={'text': 'python junior', 'area': (1), 'period': 30, 'experience' : 'noExperience' , 'per_page':2, 'order_by': 'publication_time'}
 
 def get_headers():
     return Headers(browser='firefox', os='win').generate()
 
 
 
-def get_id_offer():
+def get_id_offer(per_page=10):
     data_list = []
+    params['per_page'] = per_page
     req = requests.get(HOST,headers=get_headers(), params=params)
     data = json.loads(req.text)
     for d in data['items']:
@@ -31,19 +32,20 @@ def get_id_offer():
         else:
             metro = 'Не указано'
         data_list.append({
-            'вакансия' : d['name'],
+            'name' : d['name'],
             'link': (d['alternate_url']),
             'salary': selary,
             'employer': (d['employer']['name']),
-            'метро': metro,
-            'Требования' : d['snippet']['requirement'],
-            'Что делать' : d['snippet']['responsibility'],
+            'metro': metro,
+            'skill' : d['snippet']['requirement'].replace('<highlighttext>', '').replace('</highlighttext>',''),
+            'work' : d['snippet']['responsibility'],
             'date': d['published_at'].split('T')[0],
             'id': d['id'],
 
         })
 
-    return sorted(data_list, key=lambda x : x['date'], reverse=True)
+    # return sorted(data_list, key=lambda x : x['date'], reverse=True)  Вместо этого упорядочил поиск по дате в param
+    return data_list
 
 
 
