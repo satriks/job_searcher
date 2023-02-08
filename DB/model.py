@@ -26,4 +26,5 @@ class Offer(Base):
                f' Что делать : {self.work} \n' \
                f' Дата : {self.date} \n' \
                f' Ссылка : {self.link} \n' \
-               f' Просмотренно :  {self.favorit}'
+               f' Просмотренно :  {self.favorit}' \
+               f'id : {self.hh_id}'

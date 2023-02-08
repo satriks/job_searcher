@@ -27,6 +27,7 @@ def create_bd():
 
 def add_offer(offer_hh):
     with Session() as session:
+
         offer = Offer(hh_id=int(offer_hh['id']),
                       name=offer_hh['name'],
                       salary=offer_hh['salary'],
@@ -58,6 +59,16 @@ def inerest():
             print('Предложения кончились')
         engine.dispose()
         return offer
+
+def sort_favorit():
+    with Session() as session:
+        offer = session.query(Offer).filter(Offer.favorit == 1).first()
+        if not offer:
+            print('Предложения кончились')
+        engine.dispose()
+        return offer
+
+
 def add_favorit(offer_hh, fav):
     with Session() as session:
         offer = session.query(Offer).filter(Offer.hh_id == offer_hh).first()
@@ -69,6 +80,12 @@ def add_favorit(offer_hh, fav):
 def get_favorit():
     with Session() as session:
         offer = session.query(Offer).filter(Offer.favorit == 1).all()
+        engine.dispose()
+        return offer
+
+def get_to_send():
+    with Session() as session:
+        offer = session.query(Offer).filter(Offer.favorit == 4).all()
         engine.dispose()
         return offer
 # if __name__ == '__main__':
