@@ -3,7 +3,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy_utils import database_exists, create_database
 
 from DB.model import Offer, Base
-from settingss import database_cinfig
+from settings import database_cinfig
 
 engine = create_engine(database_cinfig.url, echo=False)
 Session = sessionmaker(bind=engine)
