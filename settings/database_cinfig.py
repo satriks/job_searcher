@@ -1,0 +1,1 @@
+url = 'postgresql://name:password@localhost:5432/hh_search'

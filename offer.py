@@ -1,3 +1,4 @@
+from datetime import date
 from time import sleep
 
 import pandas as pd
@@ -8,15 +9,26 @@ from hh import sercher_hh
 
 SEARCH = ['python', 'python стажер', 'python junior', 'python fullstack', 'python разработчик']
 
+
 def to_exel():
     '''вывод избранного в эксель'''
-    data = pd.DataFrame([(x.name, x.salary, x.employer, x.metro, x.skill, x.work, x.date, x.link, x.favorit, x.hh_id) for x in ORM.get_favorit()])
-    data.to_excel("output.xlsx", header=['Название', 'Зарплата', 'Кто','Метро', 'Знания', 'Что делать', 'Дата', 'Ссылка', 'favorit', 'hh_id' ])
+    data = pd.DataFrame(
+        [(x.name, x.salary, x.employer, x.metro, x.skill, x.work, x.date, x.link, x.favorit, x.hh_id) for x in
+         ORM.get_favorit()])
+    data.to_excel("output.xlsx",
+                  header=['Название', 'Зарплата', 'Кто', 'Метро', 'Знания', 'Что делать', 'Дата', 'Ссылка', 'favorit',
+                          'hh_id'])
+
 
 def to_exel_to_send():
-    '''вывод избранного в эксель'''
-    data = pd.DataFrame([(x.name, x.salary, x.employer, x.metro, x.skill, x.work, x.date, x.link, x.favorit, x.hh_id) for x in ORM.get_to_send()])
-    data.to_excel("to_send.xlsx", header=['Название', 'Зарплата', 'Кто','Метро', 'Знания', 'Что делать', 'Дата', 'Ссылка', 'favorit', 'hh_id' ])
+    '''вывод  вакансий для отправки резюме'''
+    data = pd.DataFrame(
+        [(x.name, x.salary, x.employer, x.metro, x.skill, x.work, x.date, x.link, x.favorit, x.hh_id) for x in
+         ORM.get_to_send()])
+    data.to_excel(f"to_send_{date.today()}.xlsx",
+                  header=['Название', 'Зарплата', 'Кто', 'Метро', 'Знания', 'Что делать', 'Дата', 'Ссылка', 'favorit',
+                          'hh_id'])
+
 
 def to_terminal():
     '''Показать избранное '''
@@ -29,18 +41,20 @@ def to_terminal():
         print()
     print(f'Всего в избранном : {len(data)}')
 
-# ORM.recreate()
 
+# ORM.recreate()
 
 
 def serch_offer(srch, offer_count):
     '''Поиск предложений '''
-    for request_hh in tqdm(srch, colour='BLUE', ncols=80, desc='Идет поиск вакансий '  ):
+    for request_hh in tqdm(srch, colour='BLUE', ncols=80, desc='Идет поиск вакансий '):
         for offer_hh in sercher_hh.get_id_offer(offer_count, text=request_hh):
             if ORM.get_offer(offer_hh):
                 continue
-            else: ORM.add_offer(offer_hh)
+            else:
+                ORM.add_offer(offer_hh)
     print()
+
 
 def sorted_offer():
     '''сортировка предложений'''
@@ -49,9 +63,11 @@ def sorted_offer():
         if offer:
             print(offer)
             ans = input('\n Куда добавить : 1 - избранное, 2 - не показывать \n')
-            if ans in  ['2', '1']:
-                ORM.add_favorit(offer.hh_id,int(ans))
-        else: break
+            if ans in ['2', '1']:
+                ORM.add_favorit(offer.hh_id, int(ans))
+        else:
+            break
+
 
 def sorted_favorit():
     while True:
@@ -60,8 +76,9 @@ def sorted_favorit():
             print(offer)
             ans = input('\n Будем отправлять ?  3/нет 4/да \n')
             if ans in ['3', '4']:
-                ORM.add_favorit(offer.hh_id,int(ans))
-        else: break
+                ORM.add_favorit(offer.hh_id, int(ans))
+        else:
+            break
 
 
 def info():
@@ -71,13 +88,15 @@ def info():
     elif fav == '2':
         to_exel()
 
+
 def start(deep=10, srch=SEARCH):
     serch_offer(srch, deep)
     sorted_offer()
     sleep(1)
     info()
 
+
 if __name__ == '__main__':
-    start(20)
+    start(30)
     # sorted_favorit()
     # to_exel_to_send()
