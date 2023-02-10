@@ -90,6 +90,7 @@ def info():
 
 
 def start(deep=10, srch=SEARCH):
+
     serch_offer(srch, deep)
     sorted_offer()
     sleep(1)
@@ -97,6 +98,7 @@ def start(deep=10, srch=SEARCH):
 
 
 if __name__ == '__main__':
+    ORM.check_bd()
     start(30)
-    # sorted_favorit()
-    # to_exel_to_send()
+    sorted_favorit()
+    to_exel_to_send()
