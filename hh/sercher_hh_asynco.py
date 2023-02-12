@@ -1,34 +1,30 @@
+import asyncio, aiohttp
 import json
-import time
 
-import aiohttp
-import asyncio
-import requests
+from tqdm.asyncio import tqdm
 from fake_headers import Headers
 
-HOST = 'https://api.hh.ru/vacancies'
-params = {'text': 'python junior', 'area': (1), 'period': 30, 'experience': 'noExperience', 'per_page': 2,
-          'order_by': 'publication_time'}
+from DB import ORM
 
+# SEARCH = ['python', 'python стажер', 'python junior', 'python fullstack', 'python разработчик']
 
 def get_headers():
     return Headers(browser='firefox', os='win').generate()
 
+async def get_offer(url, session, params):
+     async with session.get(url, params=params, headers=get_headers()) as response:
+        req = (await response.text())
+        offers = prepare_data(req)
+        for offer_hh in tqdm(offers, desc='Запись результатов', colour='green'):
+            if ORM.get_offer(offer_hh):
+                continue
+            else:
+                ORM.add_offer(offer_hh)
 
-async def get_asinc_offer(per_page=10, text='python junior'):
+
+def prepare_data(req):
     data_list = []
-    params['per_page'] = per_page
-    params['text'] = text
-    async with aiohttp.ClientSession() as sesion:
-        return sesion.get(HOST, headers=get_headers(), params=params)
-
-
-def get_id_offer(per_page=10, text='python junior'):
-    data_list = []
-    params['per_page'] = per_page
-    params['text'] = text
-    req = requests.get(HOST, headers=get_headers(), params=params)
-    data = json.loads(req.text)
+    data = json.loads(req)
     # print(data)
     for offer in data['items']:
 
@@ -72,12 +68,19 @@ def get_id_offer(per_page=10, text='python junior'):
     return data_list
 
 
+async def loop( searc_list, deep=10):
+    tasks = []
+    url = 'https://api.hh.ru/vacancies'
+    params = {'text': 'python junior', 'area': (1), 'period': 30, 'experience': 'noExperience', 'per_page': 2,
+              'order_by': 'publication_time'}
+    SEARCH = searc_list
+    async with aiohttp.ClientSession() as session:
+        for text in tqdm(SEARCH, desc='Запросы', colour='BLUE'):
+            params['text'] = text
+            params['per_page'] = deep
+            task = asyncio.create_task(get_offer(url, session, params))
+            tasks.append(task)
+        await asyncio.wait(tasks)
+
 # if __name__ == '__main__':
-#     timestart = time.time()
-#     test = get_id_offer()
-#     print(time.time() - timestart)
-#     # print(*get_id_offer(), sep='\n \n')
-#     timestart2 = time.time()
-#     ofers = asyncio.run(get_asinc_offer())
-#     print(time.time() - timestart2)
-#     print(test == ofers)
+#     asyncio.run(loop())

@@ -1,3 +1,4 @@
+import asyncio
 from datetime import date
 from time import sleep
 
@@ -5,6 +6,7 @@ import pandas as pd
 from tqdm import tqdm
 
 from DB import ORM
+from hh.sercher_hh_asynco import loop
 from hh import sercher_hh
 
 SEARCH = ['python', 'python стажер', 'python junior', 'python fullstack', 'python разработчик']
@@ -91,14 +93,16 @@ def info():
 
 def start(deep=10, srch=SEARCH):
 
-    serch_offer(srch, deep)
+    # serch_offer(srch, deep)
+    asyncio.run(loop(SEARCH, deep))
     sorted_offer()
     sleep(1)
+    print()
     info()
 
 
 if __name__ == '__main__':
-    ORM.check_bd()
-    start(30)
-    sorted_favorit()
-    to_exel_to_send()
+    # ORM.check_bd()
+    start(50)
+    # sorted_favorit()
+    # to_exel_to_send()

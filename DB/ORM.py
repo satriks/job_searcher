@@ -3,7 +3,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy_utils import database_exists, create_database
 
 from DB.model import Offer, Base
-from settings import database_cinfig
+from settingss import database_cinfig
 
 engine = create_engine(database_cinfig.url, echo=False)
 Session = sessionmaker(bind=engine)
@@ -63,7 +63,7 @@ def inerest():
     with Session() as session:
         offer = session.query(Offer).filter(Offer.favorit == None).first()
         if not offer:
-            print('Предложения кончились')
+            print('Новых предложений нет')
         engine.dispose()
         return offer
 
